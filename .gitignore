@@ -76,3 +76,9 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#.idea file
+.idea/
+
+#results
+results/

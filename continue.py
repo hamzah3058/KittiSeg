@@ -53,7 +53,6 @@ else:
 # https://github.com/tensorflow/tensorflow/issues/2034#issuecomment-220820070
 import numpy as np
 
-
 flags = tf.app.flags
 FLAGS = flags.FLAGS
 
@@ -68,7 +67,7 @@ flags.DEFINE_string('name', None,
 flags.DEFINE_string('project', None,
                     'Append a name Tag to run.')
 
-flags.DEFINE_string('hypes', None,
+flags.DEFINE_string('logdir', None,
                     'File storing model parameters.')
 
 flags.DEFINE_string('mod', None,
@@ -98,33 +97,13 @@ def main(_):
                       "'git submodule update --init --recursive'")
         exit(1)
 
-    if tf.app.flags.FLAGS.hypes is None:
-        logging.error("No hype file is given.")
-        logging.info("Usage: python train.py --hypes hypes/KittiClass.json")
+    if tf.app.flags.FLAGS.logdir is None:
+        logging.error("No logdir is given.")
+        logging.info("Usage: python train.py --logdir dir")
         exit(1)
 
-    with open(tf.app.flags.FLAGS.hypes, 'r') as f:
-        logging.info("f: %s", f)
-        hypes = commentjson.load(f)
-    utils.load_plugins()
-
-    if tf.app.flags.FLAGS.mod is not None:
-        import ast
-        mod_dict = ast.literal_eval(tf.app.flags.FLAGS.mod)
-        dict_merge(hypes, mod_dict)
-
-    if 'TV_DIR_RUNS' in os.environ:
-        os.environ['TV_DIR_RUNS'] = os.path.join(os.environ['TV_DIR_RUNS'],
-                                                 'KittiSeg')
-    utils.set_dirs(hypes, tf.app.flags.FLAGS.hypes)
-
-    utils._add_paths_to_sys(hypes)
-
-    #train.maybe_download_and_extract(hypes)
-    logging.info("Initialize training folder")
-    train.initialize_training_folder(hypes)
-    logging.info("Start training")
-    train.do_training(hypes)
+    logging.info("Continuing training...")
+    train.continue_training(tf.app.flags.FLAGS.logdir)
 
 
 if __name__ == '__main__':
